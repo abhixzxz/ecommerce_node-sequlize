@@ -15,10 +15,12 @@ import {
   createSubcategory,
   getAllSubcategories,
 } from "../controllers/productController/subcategory.controller.js";
+import { upload } from "../config/cloudinary.config.js";
 
 const router = express.Router();
 
-router.post("/create-product", createProduct);
+router.post("/create-product", upload.single("image"), createProduct);
+
 router.get("/get-all-products", getAllProducts);
 router.get("/get-product-by-id/:id", getProductById);
 router.put("/update-product-by-id/:id", updateProductById);

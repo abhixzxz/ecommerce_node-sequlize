@@ -49,6 +49,10 @@ const Product = sequelize.define(
         key: "id",
       },
     },
+    image_url: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     created_at: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
