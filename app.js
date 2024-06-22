@@ -5,14 +5,17 @@ import userRole from "./routes/userRoutes/role.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import refreshTokenRoutes from "./routes/auth.refreshToken.routes.js";
 import imageRoutes from "./routes/image.routes.js";
+import sellerRoutes from "./routes/seller.routes.js";
+import bodyParser from "body-parser";
 
 import { config } from "dotenv";
 
 const app = express();
 config();
 
-app.use(express.json()); // to parse JSON bodies
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 sequelize
   .authenticate()
@@ -37,6 +40,7 @@ app.use("/api/token", refreshTokenRoutes);
 app.use("/api/userRole", userRole);
 app.use("/api/products", productRoutes);
 app.use("/api/images", imageRoutes);
+app.use("/api/seller", sellerRoutes);
 
 app.listen(process.env.PORT || 5000, () => {
   console.log(`Server is running on ${process.env.PORT}`);
