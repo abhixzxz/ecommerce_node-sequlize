@@ -1,49 +1,42 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../../config/database.js";
-import Role from "./user.role.model.js";
+import User from "./user.model.js";
 
-const User = sequelize.define(
-  "User",
+const Address = sequelize.define(
+  "Address",
   {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
-    name: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-    },
-    email: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-      unique: true,
-      validate: {
-        isEmail: true,
-      },
-    },
-    password: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-    },
-    gender: {
-      type: DataTypes.STRING(20),
-      allowNull: false,
-    },
-    dob: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    phone_number: {
-      type: DataTypes.STRING(20),
-      validate: {
-        isNumeric: true,
-      },
-    },
-    role_id: {
+    user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      unique: false,
+      references: {
+        model: User,
+        key: "id",
+      },
+    },
+    street: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    city: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    state: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    country: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    postal_code: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
     },
     created_at: {
       type: DataTypes.DATE,
@@ -62,6 +55,7 @@ const User = sequelize.define(
   }
 );
 
-User.belongsTo(Role, { foreignKey: "role_id" });
+User.hasMany(Address, { foreignKey: "user_id" });
+Address.belongsTo(User, { foreignKey: "user_id" });
 
-export default User;
+export default Address;

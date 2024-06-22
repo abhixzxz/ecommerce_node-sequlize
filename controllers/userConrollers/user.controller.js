@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { config } from "dotenv";
 import User from "../../models/userModel/user.model.js";
+import Address from "../../models/userModel/address.model.js";
+
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -13,12 +15,21 @@ const SECRET_KEY = process.env.SECRET_KEY;
 
 export const createUser = async (req, res) => {
   try {
-    const { name, email, password, address, phone_number, role_id } = req.body;
+    const {
+      name,
+      email,
+      password,
+      gender,
+      dob,
+      addresses,
+      phone_number,
+      role_id,
+    } = req.body;
 
-    if (!name || !email || !password || !role_id) {
-      return res
-        .status(400)
-        .json({ error: "Name, email,role_id and password are required" });
+    if (!name || !email || !password || !role_id || !gender || !dob) {
+      return res.status(400).json({
+        error: "Name, email, password, role_id, gender, and dob are required",
+      });
     }
 
     const existingUser = await User.findOne({ where: { email } });
@@ -32,10 +43,21 @@ export const createUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      address,
+      gender,
+      dob,
       phone_number,
       role_id,
+      addresses,
     });
+
+    if (addresses && addresses.length > 0) {
+      for (const address of addresses) {
+        await Address.create({
+          user_id: newUser.id,
+          ...address,
+        });
+      }
+    }
 
     const accessToken = generateAccessToken(newUser);
     const refreshToken = generateRefreshToken(newUser);
@@ -51,7 +73,7 @@ export const createUser = async (req, res) => {
     if (error.name === "SequelizeUniqueConstraintError") {
       return res
         .status(400)
-        .json({ error: "Somthing went wrong try with unique values" });
+        .json({ error: "Something went wrong, try with unique values" });
     }
     res
       .status(500)
@@ -93,7 +115,9 @@ export const loginUser = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.findAll();
+    const users = await User.findAll({
+      include: Address, // Include addresses in the response
+    });
     res.status(200).json({
       message: "Users retrieved successfully",
       status: 200,
@@ -106,7 +130,9 @@ export const getAllUsers = async (req, res) => {
 
 export const getUserById = async (req, res) => {
   try {
-    const user = await User.findByPk(req.params.id);
+    const user = await User.findByPk(req.params.id, {
+      include: Address, // Include addresses in the response
+    });
     if (user) {
       res.status(200).json({
         message: "User retrieved successfully",
@@ -123,7 +149,7 @@ export const getUserById = async (req, res) => {
 
 export const updateUserById = async (req, res) => {
   try {
-    const { name, email, password, address, phone_number } = req.body;
+    const { name, email, password, addresses, phone_number } = req.body;
     const user = await User.findByPk(req.params.id);
     if (user) {
       if (password) {
@@ -132,9 +158,20 @@ export const updateUserById = async (req, res) => {
       }
       user.name = name;
       user.email = email;
-      user.address = address;
       user.phone_number = phone_number;
       await user.save();
+
+      // Handle addresses
+      if (addresses && addresses.length > 0) {
+        await Address.destroy({ where: { user_id: user.id } }); // Remove existing addresses
+        for (const address of addresses) {
+          await Address.create({
+            user_id: user.id,
+            ...address,
+          });
+        }
+      }
+
       res.status(200).json({
         message: "User updated successfully",
         status: 200,
@@ -152,9 +189,10 @@ export const deleteUserById = async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id);
     if (user) {
+      await Address.destroy({ where: { user_id: user.id } }); // Remove addresses associated with the user
       await user.destroy();
       res.status(204).json({
-        message: "User Deleted Successfully",
+        message: "User deleted successfully",
         status: 204,
       });
     } else {
