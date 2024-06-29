@@ -26,14 +26,23 @@ const User = sequelize.define(
       type: DataTypes.STRING(255),
       allowNull: false,
     },
-    address: {
-      type: DataTypes.TEXT,
+    gender: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+    },
+    dob: {
+      type: DataTypes.DATE,
+      allowNull: false,
     },
     phone_number: {
       type: DataTypes.STRING(20),
       validate: {
         isNumeric: true,
       },
+    },
+    user_image: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     role_id: {
       type: DataTypes.INTEGER,
@@ -56,5 +65,7 @@ const User = sequelize.define(
     underscored: true,
   }
 );
+
+User.belongsTo(Role, { foreignKey: "role_id" });
 
 export default User;

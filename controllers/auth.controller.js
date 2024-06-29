@@ -8,7 +8,7 @@ const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 
 export const generateAccessToken = (user) => {
   return jwt.sign({ id: user.id, email: user.email }, ACCESS_TOKEN_SECRET, {
-    expiresIn: "15m",
+    expiresIn: "20m",
   });
 };
 
@@ -19,7 +19,7 @@ export const generateRefreshToken = (user) => {
 };
 
 export const refreshToken = (req, res) => {
-  const { refreshToken } = req.body;
+  const { refreshToken } = req.cookies; // Get refreshToken from cookies
 
   if (!refreshToken) {
     return res.status(401).json({ error: "Refresh token required" });
@@ -32,6 +32,19 @@ export const refreshToken = (req, res) => {
 
     const newAccessToken = generateAccessToken(user);
     const newRefreshToken = generateRefreshToken(user);
+
+    // Set the new tokens as cookies
+    res.cookie("accessToken", newAccessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+    });
+
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+    });
 
     res.json({
       accessToken: newAccessToken,

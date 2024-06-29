@@ -1,25 +1,41 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../../config/database.js";
+import User from "./user.model.js";
 
-const Category = sequelize.define(
-  "Category",
+const Address = sequelize.define(
+  "Address",
   {
-    category_id: {
+    id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
-    category_name: {
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: User,
+        key: "id",
+      },
+    },
+    street: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      unique: true,
     },
-    category_description: {
-      type: DataTypes.TEXT,
+    city: {
+      type: DataTypes.STRING(255),
       allowNull: false,
     },
-    category_image: {
+    state: {
       type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    country: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    postal_code: {
+      type: DataTypes.STRING(20),
       allowNull: false,
     },
     created_at: {
@@ -39,4 +55,7 @@ const Category = sequelize.define(
   }
 );
 
-export default Category;
+User.hasMany(Address, { foreignKey: "user_id" });
+Address.belongsTo(User, { foreignKey: "user_id" });
+
+export default Address;
