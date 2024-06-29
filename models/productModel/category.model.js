@@ -14,6 +14,14 @@ const Category = sequelize.define(
       allowNull: false,
       unique: true,
     },
+    category_description: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    category_image: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
     created_at: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,

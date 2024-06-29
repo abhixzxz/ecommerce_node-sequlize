@@ -50,7 +50,7 @@ const Product = sequelize.define(
       },
     },
     image_url: {
-      type: DataTypes.STRING,
+      type: DataTypes.JSON, 
       allowNull: true,
     },
     created_at: {

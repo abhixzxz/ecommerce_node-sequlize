@@ -5,6 +5,7 @@ import {
   getProductById,
   updateProductById,
   deleteProductById,
+  searchProducts,
 } from "../controllers/productController/productController.js";
 import {
   createCategory,
@@ -19,12 +20,16 @@ import { upload } from "../config/cloudinary.config.js";
 
 const router = express.Router();
 
-router.post("/create-product", upload.single("image"), createProduct);
+router.post("/create-product", createProduct);
 
 router.get("/get-all-products", getAllProducts);
-router.get("/get-product-by-id/:id", getProductById);
+router.get("/getProductById/:id", getProductById);
 router.put("/update-product-by-id/:id", updateProductById);
 router.delete("/delete-product-by-id/:id", deleteProductById);
+
+// search product
+
+router.get("/search-products", searchProducts);
 
 // category
 

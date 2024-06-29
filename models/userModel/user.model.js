@@ -40,6 +40,10 @@ const User = sequelize.define(
         isNumeric: true,
       },
     },
+    user_image: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     role_id: {
       type: DataTypes.INTEGER,
       allowNull: false,

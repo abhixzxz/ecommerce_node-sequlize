@@ -30,7 +30,7 @@ const storage = new CloudinaryStorage({
   },
 });
 
-const upload = multer({ storage: storage }).array("companyLogos", 3); // Adjust the field name and limit as needed
+const upload = multer({ storage: storage }).array("companyLogos", 3);
 
 const createSeller = async (req, res) => {
   upload(req, res, async (err) => {
@@ -74,7 +74,7 @@ const createSeller = async (req, res) => {
         company_name,
         gst_number,
         bank_details,
-        companyLogos: uploadedLogos, // Save the array of Cloudinary URLs or public IDs
+        companyLogos: uploadedLogos,
       });
 
       const accessToken = generateAccessToken(newSeller);
